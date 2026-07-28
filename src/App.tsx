@@ -173,13 +173,12 @@ const App: React.FC = () => {
                 <p>Bulk production of premium ladies and gents garments, uniforms, shirts, and custom fashion apparel.</p>
               </div>
 
-              <div className="service-card-new__highlight">
+              <div className="service-card-new">
                 <div className="service-card-new__header">
                   <Scissors className="service-card-new__icon" size={24} />
                   <h3>Embroidery Center</h3>
                 </div>
                 <p>Equipped with computerized high-speed multi-needle embroidery setups for brand logos and custom badges.</p>
-                <span className="service-highlight__badge">Signature Service</span>
               </div>
 
               <div className="service-card-new">
