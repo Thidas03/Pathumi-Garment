@@ -27,6 +27,8 @@ const App: React.FC = () => {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormState({
@@ -35,14 +37,44 @@ const App: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    // Auto-clear success message after 4 seconds
-    setTimeout(() => {
-      setFormState({ name: '', email: '', phone: '', message: '' });
-      setIsSubmitted(false);
-    }, 4000);
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/pathumigarments96@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          name: formState.name,
+          email: formState.email,
+          phone: formState.phone || 'N/A',
+          message: formState.message,
+          _subject: "New Inquiry from Pathumi Garment Website",
+          _captcha: "false"
+        })
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        setFormState({ name: '', email: '', phone: '', message: '' });
+        // Auto-clear success message after 5 seconds
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 5000);
+      } else {
+        throw new Error("Failed to send inquiry.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      setSubmitError("Failed to send inquiry. Please try again or email us directly.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -335,8 +367,18 @@ const App: React.FC = () => {
                       />
                     </div>
 
-                    <button type="submit" className="btn btn--gold form-submit__btn">
-                      Submit Inquiry
+                    {submitError && (
+                      <div className="form-error" style={{ color: '#ef4444', fontSize: '0.9rem', marginBottom: '1rem', textAlign: 'left' }}>
+                        {submitError}
+                      </div>
+                    )}
+
+                    <button 
+                      type="submit" 
+                      className="btn btn--gold form-submit__btn"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Sending...' : 'Submit Inquiry'}
                       <Send size={16} />
                     </button>
                   </form>
